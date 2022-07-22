@@ -8,12 +8,16 @@ const { v3, v1 } = require('uuid');
 // ...
 app.use(express.json())
 
+// const cors = require('cors');
+// app.use(cors({
+//     origin: '127.0.0.1'
+// }));
 cron.schedule("*/2 * * * * *", async function() {
     console.log("hey");
     time = new Date().getTime()
     const status = await (await fetch('https://blr1.blynk.cloud/external/api/isHardwareConnected?token=IVVXZWTMfbZL3hjpxkeZO1OLyWrBQTne')).text()
     console.log(status);
-    if(status === "true")
+    if(status==="true")
     {
 
         console.log("LanGuard Connected");
@@ -21,9 +25,8 @@ cron.schedule("*/2 * * * * *", async function() {
         fetch('https://blr1.blynk.cloud/external/api/get?token=IVVXZWTMfbZL3hjpxkeZO1OLyWrBQTne&v0&v1&v2&v3')
             .then(result => result.json())
             .then((text,res) => {
-               res.status(200).json({
-                text:text
-               })
+               console.log("muiz");
+               
             });
     }
     else {
@@ -35,16 +38,17 @@ cron.schedule("*/2 * * * * *", async function() {
 app.get('/',async(req,res)=>{
     const status = await (await fetch('https://blr1.blynk.cloud/external/api/isHardwareConnected?token=IVVXZWTMfbZL3hjpxkeZO1OLyWrBQTne')).text()
     console.log(status);
-    if(status === "true")
+    if(status)
     {
-
         console.log("LanGuard Connected");
         console.log("fetching..."); 
         fetch('https://blr1.blynk.cloud/external/api/get?token=IVVXZWTMfbZL3hjpxkeZO1OLyWrBQTne&v0&v1&v2&v3')
             .then(result => result.json())
-            .then((text,res) => {
+            .then((text) => {
+                risk= calculateRisk(text);
                res.status(200).json({
-                text:text
+                text:text,
+                risk:risk
                })
             });
     }
@@ -55,13 +59,10 @@ app.get('/',async(req,res)=>{
 });
 
 const calculateRisk = (data) => {
-    if(v0 < 12 && v1 > 25 && V2 > 50) 
+    if(data.v0 < 12 && data.v1 > 25 && data.v2 ) 
     {
-        console.log("ALERT ALERT ! LANDSLIDE POSSIBILITY!")
+        return 90;
     }
 }
-console.log("this is sample"+v3);
-
-
 
 app.listen(process.env.PORT || 3002);
