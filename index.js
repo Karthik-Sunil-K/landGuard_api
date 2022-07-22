@@ -8,10 +8,26 @@ const { v3, v1 } = require('uuid');
 // ...
 app.use(express.json())
 
-// const cors = require('cors');
-// app.use(cors({
-//     origin: '127.0.0.1'
-// }));
+const whitelist = [
+    "http://localhost:3000",
+    "http://itshappening.athenatkmce.live",
+    "https://itshappening.athenatkmce.live",
+    "https://www.itshappening.athenatkmce.live",
+    "http://www.itshappening.athenatkmce.live",
+  ];
+  const corsOptions = {
+    origin: function (origin, callback) {
+      if (!origin || whitelist.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  };
+  app.use(cors(corsOptions));
+
+  
 cron.schedule("*/2 * * * * *", async function() {
     console.log("hey");
     time = new Date().getTime()
