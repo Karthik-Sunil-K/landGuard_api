@@ -51,7 +51,7 @@ cron.schedule("*/2 * * * * *", async function() {
 app.get('/',async(req,res)=>{
     const status = await (await fetch('https://blr1.blynk.cloud/external/api/isHardwareConnected?token=IVVXZWTMfbZL3hjpxkeZO1OLyWrBQTne')).text()
     console.log(status);
-    if(status)
+    if(status==="true")
     {
         console.log("LanGuard Connected");
         console.log("fetching..."); 
