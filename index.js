@@ -9,11 +9,8 @@ const { v3, v1 } = require('uuid');
 app.use(express.json())
 
 const whitelist = [
-    "http://localhost:3000",
-    "http://itshappening.athenatkmce.live",
-    "https://itshappening.athenatkmce.live",
-    "https://www.itshappening.athenatkmce.live",
-    "http://www.itshappening.athenatkmce.live",
+    "http://localhost",
+    "http://localhost:5500",
   ];
   const corsOptions = {
     origin: function (origin, callback) {
@@ -27,7 +24,7 @@ const whitelist = [
   };
   app.use(cors(corsOptions));
 
-  
+
 cron.schedule("*/2 * * * * *", async function() {
     console.log("hey");
     time = new Date().getTime()
