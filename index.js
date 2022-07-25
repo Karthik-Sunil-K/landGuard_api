@@ -4,6 +4,8 @@ const app = express();
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const cron = require('node-cron');
 const { v3, v1 } = require('uuid');
+const Vonage = require('@vonage/server-sdk')
+
 
 // ...
 app.use(express.json())
@@ -77,5 +79,29 @@ const calculateRisk = (data) => {
         return 90;
     }
 }
+
+app.get('/sendalertmessage', ()=> {
+  const vonage = new Vonage({
+    apiKey: "99c184e6",
+    apiSecret: "1Vy5Vs5ZTqETgdjb"
+  })
+const from = "LandGuard"
+const to = "918606683287"
+const text = 'ALERT ! ALERT ! LANDSLIDE !'
+
+vonage.message.sendSms(from, to, text, (err, responseData) => {
+    if (err) {
+        console.log(err);
+    } else {
+        if(responseData.messages[0]['status'] === "0") {
+            console.log("Message sent successfully.");
+        } else {
+            console.log(`Message failed with error: ${responseData.messages[0]['error-text']}`);
+        }
+    }
+})
+
+return "Message sent" ;
+})
 
 app.listen(process.env.PORT || 3002);
