@@ -5,6 +5,7 @@ const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch
 const cron = require('node-cron');
 const { v3, v1 } = require('uuid');
 const Vonage = require('@vonage/server-sdk')
+const cors = require('cors');
 
 
 // ...
@@ -80,7 +81,7 @@ const calculateRisk = (data) => {
     }
 }
 
-app.get('/sendalertmessage', ()=> {
+app.get('/sendalertmessage', (req,res)=> {
   const vonage = new Vonage({
     apiKey: "99c184e6",
     apiSecret: "1Vy5Vs5ZTqETgdjb"
@@ -101,7 +102,7 @@ vonage.message.sendSms(from, to, text, (err, responseData) => {
     }
 })
 
-return "Message sent" ;
+res.send("Message sent") ;
 })
 
 app.listen(process.env.PORT || 3002);
