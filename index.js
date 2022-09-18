@@ -28,51 +28,51 @@ const whitelist = [
   app.use(cors(corsOptions));
 
 
-cron.schedule("*/2 * * * * *", async function() {
-    console.log("hey");
-    time = new Date().getTime()
-    const status = await (await fetch('https://blr1.blynk.cloud/external/api/isHardwareConnected?token=IVVXZWTMfbZL3hjpxkeZO1OLyWrBQTne')).text()
-    console.log(status);
-    if(status==="true")
-    {
+// cron.schedule("*/2 * * * * *", async function() {
+//     console.log("hey");
+//     time = new Date().getTime()
+//     const status = await (await fetch('https://blr1.blynk.cloud/external/api/isHardwareConnected?token=IVVXZWTMfbZL3hjpxkeZO1OLyWrBQTne')).text()
+//     console.log(status);
+//     if(status==="true")
+//     {
 
-        console.log("LanGuard Connected");
-        console.log("fetching..."); 
-        fetch('https://blr1.blynk.cloud/external/api/get?token=IVVXZWTMfbZL3hjpxkeZO1OLyWrBQTne&v0&v1&v2&v3')
-            .then(result => result.json())
-            .then((text,res) => {
-               console.log("muiz");
+//         console.log("LanGuard Connected");
+//         console.log("fetching..."); 
+//         fetch('https://blr1.blynk.cloud/external/api/get?token=IVVXZWTMfbZL3hjpxkeZO1OLyWrBQTne&v0&v1&v2&v3')
+//             .then(result => result.json())
+//             .then((text,res) => {
+//                console.log("muiz");
                
-            });
-    }
-    else {
-        console.log("Languard is offline");
-    }
+//             });
+//     }
+//     else {
+//         console.log("Languard is offline");
+//     }
 
-});
+// });
 
-app.get('/',async(req,res)=>{
-    const status = await (await fetch('https://blr1.blynk.cloud/external/api/isHardwareConnected?token=IVVXZWTMfbZL3hjpxkeZO1OLyWrBQTne')).text()
-    console.log(status);
-    if(status==="true")
-    {
-        console.log("LanGuard Connected");
-        console.log("fetching..."); 
-        fetch('https://blr1.blynk.cloud/external/api/get?token=IVVXZWTMfbZL3hjpxkeZO1OLyWrBQTne&v0&v1&v2&v3')
-            .then(result => result.json())
-            .then((text) => {
-                risk= calculateRisk(text);
-               res.status(200).json({
-                text:text,
-                risk:risk
-               })
-            });
-    }
-    else {
-        error = {message : "Languard is offline"}
-        res.json({message:error});
-    }
-});
+// app.get('/',async(req,res)=>{
+//     const status = await (await fetch('https://blr1.blynk.cloud/external/api/isHardwareConnected?token=IVVXZWTMfbZL3hjpxkeZO1OLyWrBQTne')).text()
+//     console.log(status);
+//     if(status==="true")
+//     {
+//         console.log("LanGuard Connected");
+//         console.log("fetching..."); 
+//         fetch('https://blr1.blynk.cloud/external/api/get?token=IVVXZWTMfbZL3hjpxkeZO1OLyWrBQTne&v0&v1&v2&v3')
+//             .then(result => result.json())
+//             .then((text) => {
+//                 risk= calculateRisk(text);
+//                res.status(200).json({
+//                 text:text,
+//                 risk:risk
+//                })
+//             });
+//     }
+//     else {
+//         error = {message : "Languard is offline"}
+//         res.json({message:error});
+//     }
+// });
 
 const calculateRisk = (data) => {
     if(data.v0 < 12 && data.v1 > 25 && data.v2 ) 
@@ -82,27 +82,35 @@ const calculateRisk = (data) => {
 }
 
 app.get('/sendalertmessage', (req,res)=> {
+  console.log("In here");
+  sendMessageto = ['919946045858', "919745465434"];
+  sendTestMessage = ['917073074756', '919526808559', "918606683287"];
   const vonage = new Vonage({
     apiKey: "99c184e6",
     apiSecret: "1Vy5Vs5ZTqETgdjb"
   })
-const from = "LandGuard"
-const to = "918606683287"
-const text = 'ALERT ! ALERT ! LANDSLIDE !'
+const from = "LandGuard";
+const text = 'New Message from LandGuard : ALERT ! ALERT ! LANDSLIDE !';
 
-vonage.message.sendSms(from, to, text, (err, responseData) => {
-    if (err) {
-        console.log(err);
-    } else {
-        if(responseData.messages[0]['status'] === "0") {
-            console.log("Message sent successfully.");
-        } else {
-            console.log(`Message failed with error: ${responseData.messages[0]['error-text']}`);
-        }
-    }
+sendTestMessage.forEach((person)=> {
+  const to = person;
+  vonage.message.sendSms(from, to, text, (err, responseData) => {
+    console.log("Ivide und")
+      if (err) {
+          console.log(err);
+      } else {
+          if(responseData.messages[0]['status'] === "0") {
+              console.log("Message sent successfully.");
+          } else {
+              console.log(`Message failed with error: ${responseData.messages[0]['error-text']}`);
+          }
+      }
+  })
+  
+  res.send("Message sent") ;
 })
 
-res.send("Message sent") ;
+
 })
 
 app.listen(process.env.PORT || 3002);
